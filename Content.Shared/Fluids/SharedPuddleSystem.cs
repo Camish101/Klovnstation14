@@ -77,6 +77,7 @@ public abstract partial class SharedPuddleSystem : EntitySystem
 
         CacheStandsout();
         InitializeSpillable();
+        InitializeEvaporin(); //KS14
     }
 
     public override void Update(float frameTime)

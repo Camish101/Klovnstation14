@@ -17,7 +17,7 @@ public abstract partial class SharedPuddleSystem
         Dirty(ent);
     }
 
-    private void UpdateEvaporation(Entity<PuddleComponent> entity, Solution solution)
+    public void UpdateEvaporation(Entity<PuddleComponent> entity, Solution solution) // KS14 public
     {
         // KS14 - Start
         // Calculate evaporation speed, including dynamic modifications (e.g. Evaporin gas).
@@ -80,14 +80,14 @@ public abstract partial class SharedPuddleSystem
             {
                 // Evaporin is present: force evaporation of the ENTIRE puddle, regardless of contents.
                 reagentProportions = puddleSolution.Contents.ToDictionary(
-                    r => new ProtoId<ReagentPrototype>(r.Reagent.Prototype), 
+                    r => new ProtoId<ReagentPrototype>(r.Reagent.Prototype),
                     r => r.Quantity / puddleSolution.Volume);
             }
             else
             {
                 // Vanilla behavior: only evaporate naturally evaporating reagents.
                 reagentProportions = evaporationSpeeds.ToDictionary(
-                    kv => kv.Key, 
+                    kv => kv.Key,
                     kv => puddleSolution.GetTotalPrototypeQuantity(kv.Key) / puddleSolution.Volume);
             }
             // KS14 - End
