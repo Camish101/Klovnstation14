@@ -4,14 +4,11 @@ using Content.Shared.Atmos.Components;
 using Content.Shared.Atmos.EntitySystems;
 using Content.Shared.Atmos.Piping.Components;
 using Robust.Shared.Map.Components;
-using Content.Shared.Fluids.Components; //KS14
 
 namespace Content.Server.Atmos.EntitySystems;
 
 public partial class AtmosphereSystem
 {
-    [Robust.Shared.IoC.Dependency] private readonly EntityQuery<PuddleComponent> _puddleQuery = default!; //KS14
-    private IEntityManager _entityManager = default!; //KS14
     /*
     Partial class that stores miscellaneous utility methods for Atmospherics.
     */
@@ -169,18 +166,11 @@ public partial class AtmosphereSystem
     /// <param name="tile">The tile to check for devices on.</param>
     private void NotifyDeviceTileChanged(Entity<GridAtmosphereComponent, MapGridComponent> ent, Vector2i tile)
     {
-        //KS14 start - originally just gets anchored entities, this way it gets all the entities on the tile so we can feed the event to puddles
+        var inTile = _mapSystem.GetAnchoredEntities(ent.Owner, ent.Comp2, tile);
         var ev = new AtmosDeviceTileChangedEvent();
-        var tileRef = _mapSystem.GetTileRef((ent.Owner, ent.Comp2), tile);
-        var entities = _entityManager.System<EntityLookupSystem>().GetLocalEntitiesIntersecting(tileRef, 0f);
-
-        foreach (var uid in entities)
+        foreach (var uid in inTile)
         {
-            if (!TryComp(uid, out TransformComponent? transformComp))
-                continue;
-            if (transformComp!.Anchored || _puddleQuery.HasComponent(uid))
-                RaiseLocalEvent(uid, ref ev);
+            RaiseLocalEvent(uid, ref ev);
         }
-        //KS14 end
     }
 }
